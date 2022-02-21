@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,7 +53,7 @@ public class PassingCodeTests {
     """)
     void getApplesAbove200Grams(){
         //Arrange
-        var resultList = getApplesBy(new Above200GramsCondition());
+        var resultList = getApplesBy(new Above200GramsPredicate());
 
         assertThat(resultList.size()).isEqualTo(2);
         //Cleanup
@@ -64,7 +65,7 @@ public class PassingCodeTests {
     """)
     void getApplesByWeightAndColor(){
         //Arrange
-        var resultList = getApplesBy(new Condition() {
+        var resultList = getApplesBy(new Predicate<Apple>() {
             @Override
             public boolean test(Apple apple) {
                 return apple.getWeight() > 200 && "RED".equalsIgnoreCase(apple.getColor());
@@ -78,16 +79,17 @@ public class PassingCodeTests {
     }
 
 
+
     @Test
     @DisplayName("""
     get apples below 200 grams and with color RED
     """)
     void getApplesBelow200GramsAndColor(){
         //Arrange
-        var resultList = getApplesBy(
-                (Apple apple) ->{  return apple.getWeight() <= 200 && "RED".equalsIgnoreCase(apple.getColor());
-            }
-        );
+        Predicate<Apple> condition = (Apple apple) -> {
+            return apple.getWeight() <= 200 && "RED".equalsIgnoreCase(apple.getColor());
+        };
+        var resultList = getApplesBy(condition );
         //Act
 
         //Assert
@@ -95,7 +97,7 @@ public class PassingCodeTests {
         //Cleanup
     }
 
-    private List<Apple> getApplesBy(Condition condition) {
+    private List<Apple> getApplesBy(Predicate<Apple> condition) {
         List<Apple> resultList = new ArrayList<>();
         for (Apple apple : appleStock) {
             if (condition.test(apple)) {
@@ -105,11 +107,8 @@ public class PassingCodeTests {
         return resultList;
     }
 
-    interface Condition{
-        public boolean test(Apple apple);
-    }
 
-    class RedCondition implements Condition{
+    class RedCondition implements Predicate<Apple> {
 
         @Override
         public boolean test(Apple apple) {
@@ -117,7 +116,7 @@ public class PassingCodeTests {
         }
     }
 
-    class GreenCondition implements Condition{
+    class GreenCondition implements Predicate<Apple> {
 
         @Override
         public boolean test(Apple apple) {
@@ -125,7 +124,7 @@ public class PassingCodeTests {
         }
     }
 
-    class Above200GramsCondition implements Condition{
+    class Above200GramsPredicate implements Predicate<Apple> {
         @Override
         public boolean test(Apple apple) {
             return apple.getWeight() > 200;
