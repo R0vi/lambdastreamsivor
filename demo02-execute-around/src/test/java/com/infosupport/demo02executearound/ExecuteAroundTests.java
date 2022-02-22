@@ -41,11 +41,59 @@ public class ExecuteAroundTests {
                 final var bufferedReader = new BufferedReader(fileReader);){
 
             consumer.accept(bufferedReader);
-
-
         }catch (Exception e){
             //log
             //throw exception after enriching it with context
         }
+    }
+
+    @Test
+    @DisplayName("""
+    Execute Around Pattern
+    """)
+    void executeAroundDemoWithMyCheckedConsumer(){
+        //Arrange
+        readFile(MyUnchecked.consumer((bfr) -> {
+
+//            final var line = bfr.readLine();
+//            System.out.println(line);
+            throw new Exception("How is this handled?");
+
+        }));
+
+    }
+
+    interface CheckedConsumer<T>{
+        void accept(T t) throws Exception;
+    }
+
+    class MyUnchecked<T> {
+        static <T> Consumer<T> consumer(CheckedConsumer<T> checkedConsumer) {
+            return t -> {
+                try {
+                    checkedConsumer.accept(t);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            };
+        }
+    }
+
+
+    @Test
+    @DisplayName("""
+    Execute Around Pattern
+    """)
+    void executeAroundDemoWithJool(){
+        //Arrange
+        readFile(Unchecked.consumer((bfr) -> {
+
+
+
+//            final var line = bfr.readLine();
+//            System.out.println(line);
+            throw new Exception("How is this handled?");
+
+        }));
     }
 }
