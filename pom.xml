@@ -11,6 +11,7 @@
         <module>demo01-passingcode</module>
         <module>demo02-execute-around</module>
         <module>demo03-lambda-internals</module>
+        <module>demo04-method-references</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
